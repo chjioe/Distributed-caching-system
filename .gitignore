@@ -5,6 +5,8 @@ build/
 *.so
 *.dylib
 
+.vercel/
+
 # CMake
 CMakeCache.txt
 CMakeFiles/
