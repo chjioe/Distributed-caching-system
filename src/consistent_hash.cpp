@@ -68,7 +68,7 @@ void ConsistentHash::removeNode(const std::string& node_id) {
 Node ConsistentHash::getNode(const std::string& key) const {
     // 检查哈希环是否为空
     if (ring_.empty()) {
-        throw std::runtime_error("No nodes available"); // 没有可用节点
+        throw std::runtime_error("没有可用节点"); // 没有可用节点
     }
     
     // 计算键值的哈希值，确定其在哈希环上的位置

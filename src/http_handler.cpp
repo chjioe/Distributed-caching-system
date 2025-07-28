@@ -57,7 +57,7 @@ void HttpHandler::serverLoop() {
     // 创建TCP套接字
     server_fd_ = socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd_ < 0) {
-        std::cerr << "Failed to create socket" << std::endl;
+        std::cerr << "创建套接字失败" << std::endl;
         return;
     }
     
@@ -73,19 +73,19 @@ void HttpHandler::serverLoop() {
     
     // 绑定套接字到指定地址和端口
     if (bind(server_fd_, (struct sockaddr*)&address, sizeof(address)) < 0) {
-        std::cerr << "Failed to bind socket to port " << port_ << std::endl;
+        std::cerr << "绑定套接字到端口 " << port_ << " 失败" << std::endl;
         close(server_fd_);
         return;
     }
     
     // 开始监听连接，设置最大等待队列长度为10
     if (listen(server_fd_, 10) < 0) {
-        std::cerr << "Failed to listen on socket" << std::endl;
+        std::cerr << "监听套接字失败" << std::endl;
         close(server_fd_);
         return;
     }
     
-    std::cout << "HTTP server listening on port " << port_ << std::endl;
+    std::cout << "HTTP服务器正在监听端口 " << port_ << std::endl;
     
     // 主服务循环：接受客户端连接并处理请求
     while (running_) {
@@ -96,7 +96,7 @@ void HttpHandler::serverLoop() {
         int client_fd = accept(server_fd_, (struct sockaddr*)&client_addr, &client_len);
         if (client_fd < 0) {
             if (running_) {
-                std::cerr << "Failed to accept connection" << std::endl;
+                std::cerr << "接受连接失败" << std::endl;
             }
             continue;
         }
@@ -173,7 +173,7 @@ void HttpHandler::handleRequest(int client_fd) {
             } else {
                 // JSON解析失败
                 Json::Value error_response;
-                error_response["detail"] = "Invalid JSON";
+                error_response["detail"] = "无效的JSON格式";
                 Json::StreamWriterBuilder builder;
                 std::string json_str = Json::writeString(builder, error_response);
                 response = createHttpResponse(400, "application/json", json_str);
@@ -194,7 +194,7 @@ void HttpHandler::handleRequest(int client_fd) {
             } else {
                 // 键不存在，返回404错误
                 Json::Value error_response;
-                error_response["detail"] = "Not Found";
+                error_response["detail"] = "未找到";
                 Json::StreamWriterBuilder builder;
                 std::string json_str = Json::writeString(builder, error_response);
                 response = createHttpResponse(404, "application/json", json_str);
@@ -211,7 +211,7 @@ void HttpHandler::handleRequest(int client_fd) {
         else {
             // 不支持的请求路径或方法
             Json::Value error_response;
-            error_response["detail"] = "Not Found";
+            error_response["detail"] = "未找到";
             Json::StreamWriterBuilder builder;
             std::string json_str = Json::writeString(builder, error_response);
             response = createHttpResponse(404, "application/json", json_str);
@@ -219,7 +219,7 @@ void HttpHandler::handleRequest(int client_fd) {
     } catch (const std::exception& e) {
         // 捕获所有异常，返回内部服务器错误
         Json::Value error_response;
-        error_response["detail"] = "Internal Server Error";
+        error_response["detail"] = "内部服务器错误";
         Json::StreamWriterBuilder builder;
         std::string json_str = Json::writeString(builder, error_response);
         response = createHttpResponse(500, "application/json", json_str);
@@ -283,11 +283,11 @@ std::string HttpHandler::createHttpResponse(int status_code, const std::string& 
     // 根据状态码确定状态文本
     std::string status_text;
     switch (status_code) {
-        case 200: status_text = "OK"; break;
-        case 400: status_text = "Bad Request"; break;
-        case 404: status_text = "Not Found"; break;
-        case 500: status_text = "Internal Server Error"; break;
-        default: status_text = "Unknown"; break;
+        case 200: status_text = "成功"; break;
+        case 400: status_text = "请求错误"; break;
+        case 404: status_text = "未找到"; break;
+        case 500: status_text = "内部服务器错误"; break;
+        default: status_text = "未知"; break;
     }
     
     // 构建HTTP响应头
