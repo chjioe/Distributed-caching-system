@@ -6,6 +6,7 @@ build/
 *.dylib
 
 .vercel/
+*.json
 
 # CMake
 CMakeCache.txt
